@@ -1,6 +1,9 @@
 var root = 'http://localhost:2403' //Default
   , BASE_URL = '/'
   , _dpd = {}
+  , isSocketReady = false
+  , socket
+  , io = require('socket.io-titanium')
 ;
 
 _dpd.ajax = function (url, options){
@@ -277,9 +280,52 @@ module.exports = function(resource) {
   return r;
 };
 
+module.exports.on = function(message, fn) {
+  Ti.API.debug('dpd.on'+JSON.stringify(Array.prototype.slice.call(arguments)));
+  // if (!isSocketReady) return new Error("No websocket has been created yet. You must call dpd.init() first.");
+  // socket.on.apply(socket, arguments);
+  // socket.on(message, fn)
+};
+
+module.exports.once = function(name, fn) {
+  var _fn = function() {
+    socket.removeListener(name, _fn);
+    fn.apply(this, arguments);
+  };
+  socket.on(name, _fn);
+};
+
+module.exports.off = function(name, fn) {
+  if (fn == null) {
+    socket.removeAllListeners(name);
+  } else {
+    socket.removeListener(name, fn);
+  }
+};
+
+module.exports.socketReady = function(fn) {
+  if (isSocketReady) {
+    setTimeout(fn, 0);
+  } else {
+    exports.once('connect', fn);
+  }
+};
+
+module.exports.socket = socket;
+
 module.exports.init = function (options, fn) {
   /*
     root: string, server including protocol, host, port
   */
   root = options.root || root;
+
+  try {
+    var io = require('socket.io-titanium');
+    module.exports.socket = socket = io.connect(options.root);
+    isSocketReady = true;
+    if (fn) setTimeout(fn, 0);
+  }
+  catch (e) {
+    if (fn) fn(e);
+  }
 }
