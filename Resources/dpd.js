@@ -4,6 +4,12 @@ var root = 'http://localhost:2403' //Default
 ;
 
 _dpd.ajax = function (url, options){
+	
+  //append query to url if exists
+  if (options.query) {
+  	url += ("?"+options.query);
+  }
+  
   var client = Ti.Network.createHTTPClient({
     url: url,
     onload: function (e) {
