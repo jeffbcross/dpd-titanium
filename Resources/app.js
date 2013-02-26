@@ -2,7 +2,7 @@ var win
   , testingTimeout = 5000
   , tests = []
   , testPostID
-  , dpd = require('dpd')
+  , dpd = require('tidpd')
   , console;
 
 var win = Titanium.UI.createWindow({  
@@ -10,8 +10,6 @@ var win = Titanium.UI.createWindow({
     layout:'vertical'
 });
 win.open();
-
-dpd.init({root:'http://localhost:2403'});
 
 function logInfo(color, message) {
   var label = Titanium.UI.createLabel({
