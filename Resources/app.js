@@ -2,7 +2,7 @@ var win
   , testingTimeout = 5000
   , tests = []
   , testPostID
-  , dpd = require('dpd')
+  , dpd = require('tidpd')
   , console;
 
 var win = Titanium.UI.createWindow({  
@@ -10,8 +10,6 @@ var win = Titanium.UI.createWindow({
     layout:'vertical'
 });
 win.open();
-
-dpd.init({root:'http://localhost:2403'});
 
 function logInfo(color, message) {
   var label = Titanium.UI.createLabel({
@@ -73,7 +71,13 @@ function should (should, verb, args) {
     
     next && next();
   });
-  dpd('collection')[verb].apply(dpd, args);
+  //dpd('collection')[verb].apply(dpd, args);
+  
+  // COPY AND PASTE FROM DPD DASHBOARD!!
+  dpd.COLLECTION.post({"column":123}, function(result, err) {
+    if(err) return console.log(err);
+    console.log(result, result.id);
+  });
   
   setTimeout(function(){
     if (!testComplete) console.error(new Error("Test timed out for"+should));

@@ -1,9 +1,14 @@
 var root = 'http://localhost:2403' //Default
-  , BASE_URL = '/'
   , _dpd = {}
 ;
 
 _dpd.ajax = function (url, options){
+  
+  //append query to url if exists
+  if (options.query) {
+    url += ("?"+options.query);
+  }
+    
   var client = Ti.Network.createHTTPClient({
     url: url,
     onload: function (e) {
@@ -114,8 +119,8 @@ function returnError(fn) {
 var baseMethods = {
   get: function(options, fn) {
     var query = encodeIfComplex(options.query);
-    
-    return _dpd.ajax(root + joinPath(BASE_URL, options.path), {
+
+    return _dpd.ajax(root + options.path, {
         method: "GET"
       , query: query
       , success: returnSuccess(fn)
@@ -125,7 +130,7 @@ var baseMethods = {
   , del: function(options, fn) {
     var query = encodeIfComplex(options.query);
 
-    return _dpd.ajax(root + joinPath(BASE_URL, options.path), {
+    return _dpd.ajax(root + options.path, {
         method: "DELETE"
       , query: query
       , success: returnSuccess(fn)
@@ -137,7 +142,7 @@ var baseMethods = {
     if (query) query = '?' + query;
     else query = '';
 
-    return _dpd.ajax(root + joinPath(BASE_URL, options.path) + query, {
+    return _dpd.ajax(root + options.path + query, {
         method: method
       , contentType: options.body && "application/json"
       , data: options.body || {}
@@ -180,13 +185,13 @@ function parseGetSignature(args) {
   }
 
   // query
-  if (typeof args[i] === 'object' || !args[i]) { // IE considers console.log to be an object. 
+  if (typeof args[i] === 'object' || !args[i]) { // IE considers console.log to be an object.
     settings.query = args[i];
     i++;
   }
 
   if (typeof args[i] === 'function') {
-    settings.fn = args[i];  
+    settings.fn = args[i];
   }
 
   return settings;
@@ -216,7 +221,7 @@ function parsePostSignature(args) {
   }
 
   if (typeof args[i] === 'function') {
-    settings.fn = args[i];  
+    settings.fn = args[i];
   }
 
   return settings;
